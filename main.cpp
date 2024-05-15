@@ -131,7 +131,7 @@ int main() {
 
     int* original_points = new int[num_points];
 
-    make_start_points(start_points, original_points, num_points, -10.0, 10.0);
+    make_start_points(start_points, original_points, num_points, -5.0, 5.0);
 //    make_start_points(start_points, original_points, 800, -1.0, 1.0);
 
 
@@ -162,34 +162,36 @@ int main() {
 //    }
 
 
-
+//          вывод текста
         sf::Clock clock;
         sf::Font font;
-//        if (!font.loadFromFile("../arial_bolditalicmt.ttf")) {
         if (!font.loadFromFile("../Montserrat-Regular.ttf")) {
             return EXIT_FAILURE;
         }
         sf::Text text;
         text.setFont(font);
         text.setCharacterSize(7);
-        text.setFillColor(sf::Color::White);
-//        text.setStyle(sf::Text::Bold);
+        text.setFillColor(sf::Color::Red);
         text.setString("A");
         text.setPosition(0, 0);
-//        text.setLetterSpacing(1); // Optional: Increase letter spacing for better readability
-//        text.setSmooth(false); // Disable smooth rendering
-        text.setOutlineThickness(0); // Remove outline
-//        text.setOutlineColor(sf::Color::Transparent); // Make outline transparent
-
+        text.setOutlineThickness(0.5);
+//        text.setOutlineColor(sf::Color::Red);
+        sf::Text textB;
+        textB.setFont(font);
+        textB.setCharacterSize(7);
+        textB.setFillColor(sf::Color::Red);
+        textB.setString("B");
+        textB.setPosition(0, 0);
+//        textB.setOutlineThickness(0);
         bool showText = false;
-
-
+        bool showTextB = false;
+//          вывод текста
 
 
         const unsigned int windowWidth = 800;
         const unsigned int windowHeight = 800;
         sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Attractor");
-        sf::View view(sf::FloatRect(-10.f, -10.f, 20.f, 20.f));
+        sf::View view(sf::FloatRect(-5.f, -5.f, 10.f, 10.f));
 //        sf::View view(sf::FloatRect(-20.f, -20.f, 40.f, 40.f));
         view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
         window.setView(view);
@@ -247,21 +249,16 @@ int main() {
 //                        std::cout << "Z-rotation" << std::endl;
                         flag = true;
                     }
-                    else if (event.key.code == sf::Keyboard::B) {
-                        b *= 1.2;
-                    }
                     else if (event.key.code == sf::Keyboard::A) {
-                        showText = true;
-                        clock.restart();
-                        a *= 1.2;
-                    }
-
-//                    else if (event.key.code == sf::Keyboard::Space)
-//                    {
 //                        showText = true;
 //                        clock.restart();
-//                    }
-
+                        a *= 1.2;
+                    }
+                    else if (event.key.code == sf::Keyboard::B) {
+//                        showTextB = true;
+//                        clock.restart();
+                        b *= 1.2;
+                    }
                 }
 
             }
@@ -297,8 +294,7 @@ int main() {
 //                    coordinates[i].x = start_points[i][0];
 //                    coordinates[i].y = start_points[i][1];
 
-                    sf::CircleShape point_new(0.025f);
-//                    sf::CircleShape point_new(0.04f);
+                    sf::CircleShape point_new(0.020f);
 
                     point_new.setPosition(coordinates[i]);
                     if (original_points[i] == 1) {
@@ -319,16 +315,15 @@ int main() {
                 }
                 t += h;
             }
-            if (showText) {
-                window.draw(text);
-            }
+//            if (showText) {
+//                window.draw(text);
+//            }
 
             window.display();
 
-            if (showText && clock.getElapsedTime().asSeconds() > 3.0) {
-//                window.clear();
-                showText = false;
-            }
+//            if (showText && clock.getElapsedTime().asSeconds() > 3.0) {
+//                showText = false;
+//            }
 
         }
 
