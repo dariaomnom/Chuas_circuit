@@ -7,35 +7,21 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-//const double C1 = 1.0 / 9.0;
-//const double C2 = 1.0;
-//const double L = 1.0 / 7.0;
-//const double G = 0.7;
-//const double Ga = -0.8;
-//const double Gb = -0.5;
-//
-//const double m0 = Ga / G;
-//const double m1 = Gb / G;
-//const double a = C2 / C1;
-//const double b = C2 / (G * G * L);
-//
-//const double T = 10000.0;
-//const double h = 0.01;
+const double C1 = 1.0 / 9.0;
+const double C2 = 1.0;
+const double L = 1.0 / 7.0;
+const double G = 0.7;
+const double Ga = -0.8;
+const double Gb = -0.5;
 
-double C1 = 1.0 / 9.0;
-double C2 = 1.0;
-double L = 1.0 / 7.0;
-double G = 0.7;
-double Ga = -0.8;
-double Gb = -0.5;
+const double m0 = Ga / G;
+const double m1 = Gb / G;
+ double a = C2 / C1;
+ double b = C2 / (G * G * L);
 
-double m0 = Ga / G;
-double m1 = Gb / G;
-double a = C2 / C1;
-double b = C2 / (G * G * L);
+const double T = 10000.0;
+const double h = 0.01;
 
-double T = 10000.0;
-double h = 0.01;
 
 class RenderWindow;
 
@@ -163,7 +149,7 @@ int main() {
 
 
 
-        sf::Clock clock;
+//        sf::Clock clock;
 //        sf::Font font;
 //        if (!font.loadFromFile("../Montserrat-Regular.ttf")) {
 //            return EXIT_FAILURE;
@@ -200,8 +186,8 @@ int main() {
             coordinates.push_back(sf::Vector2f(start_points[i][0], start_points[i][1]));
         }
 
-//        sf::Clock clock;
-        const float desiredFrameTime = 10.0f; // 100 мс = 10 кадров в секунду
+        sf::Clock clock;
+        const float desiredFrameTime = 10.0f;
 
 
         float angleX = 0.0f;
