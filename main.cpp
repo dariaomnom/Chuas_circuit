@@ -7,6 +7,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#define num_points 10000
+
 const double C1 = 1.0 / 9.0;
 const double C2 = 1.0;
 const double L = 1.0 / 7.0;
@@ -30,18 +32,34 @@ double rand(double start, double stop) {
     return res;
 }
 
-void make_start_points(double** points, int* colors, double num, double start, double stop) {
+//void make_start_points(double** points, int* colors, double num, double start, double stop) {
+//    for (int i = 0; i < num; i++) {
+//        for (int j = 0; j < 3; j++) {
+//            points[i][j] = rand(start, stop);
+//        }
+//        if (points[i][0] < 0 && points[i][1] <= 0) {
+//            colors[i] = 1;
+//        } else if (points[i][0] < 0 && points[i][1] > 0) {
+//            colors[i] = 2;
+//        } else if (points[i][0] >= 0 && points[i][1] <= 0) {
+//            colors[i] = 3;
+//        } else if (points[i][0] >= 0 && points[i][1] > 0) {
+//            colors[i] = 4;
+//        }
+//    }
+//}
+void make_start_points(double* points, int* colors, double num, double start, double stop) {
     for (int i = 0; i < num; i++) {
         for (int j = 0; j < 3; j++) {
-            points[i][j] = rand(start, stop);
+            points[i * 3 + j] = rand(start, stop);
         }
-        if (points[i][0] < 0 && points[i][1] <= 0) {
+        if (points[i * 3 + 0] < 0 && points[i * 3 + 1] <= 0) {
             colors[i] = 1;
-        } else if (points[i][0] < 0 && points[i][1] > 0) {
+        } else if (points[i * 3 + 0] < 0 && points[i * 3 + 1] > 0) {
             colors[i] = 2;
-        } else if (points[i][0] >= 0 && points[i][1] <= 0) {
+        } else if (points[i * 3 + 0] >= 0 && points[i * 3 + 1] <= 0) {
             colors[i] = 3;
-        } else if (points[i][0] >= 0 && points[i][1] > 0) {
+        } else if (points[i * 3 + 0] >= 0 && points[i * 3 + 1] > 0) {
             colors[i] = 4;
         }
     }
@@ -52,36 +70,89 @@ void make_start_points(double** points, int* colors, double num, double start, d
 double H(double x) {
     return m1 * x + ((m0 - m1) / 2) * (fabs(x + 1) - fabs(x - 1));
 }
+//void H(double* x, double* H_func) {
+//    for (int i = 0; i < num_points; i++) {
+//        H_func[i] = m1 * x[i] + ((m0 - m1) / 2) * (fabs(x[i] + 1) - fabs(x[i] - 1));
+//    }
+//}
 
-void f_Chua(double* X, double* dX) {
-    dX[0] = a * (X[1] - X[0] - H(X[0]));
-    dX[1] = X[0] - X[1] + X[2];
-    dX[2] = -b * X[1];
+//void f_Chua(double* X, double* dX) {
+//    dX[0] = a * (X[1] - X[0] - H(X[0]));
+//    dX[1] = X[0] - X[1] + X[2];
+//    dX[2] = -b * X[1];
+//}
+
+//void f_Chua(double* X, double* dX, int point_index) {
+//    dX[0] = a * (X[point_index * 3 + 1] - X[point_index * 3 + 0] - H(X[point_index * 3 + 0]));
+//    dX[1] = X[point_index * 3 + 0] - X[point_index * 3 + 1] + X[point_index * 3 + 2];
+//    dX[2] = -b * X[point_index * 3 + 1];
+//}
+//void f_Chua(double* X, double* dX) {
+//    dX[0] = a * (X[1] - X[0] - H(X[0]));
+//    dX[1] = X[0] - X[1] + X[2];
+//    dX[2] = -b * X[1];
+//}
+void f_Chua(double X, double Y, double Z, double* dX) {
+    dX[0] = a * (Y - X - H(X));
+    dX[1] = X - Y + Z;
+    dX[2] = -b * Y;
 }
 
+//void f_Chua(double* X, double* dX, double* H_func) {
+//    H(X, H_func);
+//    for (int i = 0; i < num_points; i++) {
+//        dX[i*3 + 0] = a * (X[i*3 + 1] - X[i*3 + 0] - H_func[i]);
+//        dX[i*3 + 1] = X[i*3 + 0] - X[i*3 + 1] + X[i*3 + 2];
+//        dX[i*3 + 2] = -b * X[i*3 + 1];
+//    }
+//}
+
+//void RK4(double* X, double* X_tmp, double* k1, double* k2, double* k3, double* k4) {
+//    f_Chua(X, k1);
+//    for (int i = 0; i < 3; i++) {
+//        X_tmp[i] = X[i] + h * 0.5 * k1[i];
+//    }
+//
+//    f_Chua(X_tmp, k2);
+//    for (int i = 0; i < 3; i++) {
+//        X_tmp[i] = X[i] + h * 0.5 * k2[i];
+//    }
+//
+//    f_Chua(X_tmp, k3);
+//    for (int i = 0; i < 3; i++) {
+//        X_tmp[i] = X[i] + h * 1 * k3[i];
+//    }
+//
+//    f_Chua(X_tmp, k4);
+//    for (int i = 0; i < 3; i++) {
+//        X[i] += h * (1.0 / 6.0 * k1[i] + 1.0 / 3.0 * k2[i] + 1.0 / 3.0 * k3[i] + 1.0 / 6.0 * k4[i]);
+//    }
+//}
 void RK4(double* X, double* X_tmp, double* k1, double* k2, double* k3, double* k4) {
-    f_Chua(X, k1);
-    for (int i = 0; i < 3; i++) {
-        X_tmp[i] = X[i] + h * 0.5 * k1[i];
-    }
+    for (int j = 0; j < num_points; j++) {
+        f_Chua(X[j*3 + 0], X[j*3 + 1], X[j*3 + 2], k1);
+        for (int i = 0; i < 3; i++) {
+            X_tmp[i] = X[j*3 + i] + h * 0.5 * k1[i];
+        }
 
-    f_Chua(X_tmp, k2);
-    for (int i = 0; i < 3; i++) {
-        X_tmp[i] = X[i] + h * 0.5 * k2[i];
-    }
+        f_Chua(X_tmp[0], X_tmp[1], X_tmp[2], k2);
+        for (int i = 0; i < 3; i++) {
+            X_tmp[i] = X[j*3 + i] + h * 0.5 * k2[i];
+        }
 
-    f_Chua(X_tmp, k3);
-    for (int i = 0; i < 3; i++) {
-        X_tmp[i] = X[i] + h * 1 * k3[i];
-    }
+        f_Chua(X_tmp[0], X_tmp[1], X_tmp[2], k3);
+        for (int i = 0; i < 3; i++) {
+            X_tmp[i] = X[j*3 + i] + h * 1 * k3[i];
+        }
 
-    f_Chua(X_tmp, k4);
-    for (int i = 0; i < 3; i++) {
-        X[i] += h * (1.0 / 6.0 * k1[i] + 1.0 / 3.0 * k2[i] + 1.0 / 3.0 * k3[i] + 1.0 / 6.0 * k4[i]);
+        f_Chua(X_tmp[0], X_tmp[1], X_tmp[2], k4);
+        for (int i = 0; i < 3; i++) {
+            X[j*3 + i] += h * (1.0 / 6.0 * k1[i] + 1.0 / 3.0 * k2[i] + 1.0 / 3.0 * k3[i] + 1.0 / 6.0 * k4[i]);
+        }
     }
 }
 
-// Структура для представления вектора
+
 struct Vector3 {
     float x, y, z;
 
@@ -100,77 +171,37 @@ struct Vector3 {
 
 
 int main() {
-    int num_points = 10000;
+//    int num_points = 10000;
 
-    auto k = new double**[num_points];
-    for (int i = 0; i < num_points; i++) {
-        k[i] = new double*[4];
-        for (int j = 0; j < 4; j++) {
-            k[i][j] = new double[3];
-        }
-    }
+//    auto k = new double**[num_points];
+//    for (int i = 0; i < num_points; i++) {
+//        k[i] = new double*[4];
+//        for (int j = 0; j < 4; j++) {
+//            k[i][j] = new double[3];
+//        }
+//    }
+//    auto k = new double[num_points * 4 * 3];
+    auto k1 = new double[3];
+    auto k2 = new double[3];
+    auto k3 = new double[3];
+    auto k4 = new double[3];
 
-    auto start_points = new double*[num_points];
-    for (int i = 0; i < num_points; i++) {
-        start_points[i] = new double[3];
-    }
 
-    int* original_points = new int[num_points];
+//    auto start_points = new double*[num_points];
+//    for (int i = 0; i < num_points; i++) {
+//        start_points[i] = new double[3];
+//    }
+    auto start_points = new double[num_points * 3];
+    auto X_tmp = new double[3];
+
+    auto original_points = new int[num_points];
 
     make_start_points(start_points, original_points, num_points, -5.0, 5.0);
-//    make_start_points(start_points, original_points, 800, -1.0, 1.0);
 
+//    double X_tmp[3];
 
+//    auto H_func = new double[num_points];
 
-//          Для создания графика в gnuplot
-// Для стандарта C++11 и новее:
-//    double X[3] {-1.0, 1.0, 1.0};
-//    double X_tmp[3] {};
-//    double k1[3] {}, k2[3] {}, k3[3], k4[3] {};
-
-// Если предыдущий вариант вызывает ошибки:
-//    double X[3];
-    double X_tmp[3];
-//    X[0] = -1.0;
-//    X[1] = 1.0;
-//    X[2] = 1.0;
-//    double k1[3];
-//    double k2[3];
-//    double k3[3];
-//    double k4[3];
-
-
-//          Для создания графика в gnuplot
-//    std::ofstream outputFile("../data3d.txt");
-//    for (double t = 0; t < T; t += h) {
-//        outputFile << std::fixed << std::setprecision(16) << X[0] << " " << X[1]  << " " << X[2] << std::endl;
-//        RK4(X, X_tmp, k1, k2, k3, k4);
-//    }
-
-
-
-//        sf::Clock clock;
-//        sf::Font font;
-//        if (!font.loadFromFile("../Montserrat-Regular.ttf")) {
-//            return EXIT_FAILURE;
-//        }
-//        sf::Text text;
-//        text.setFont(font);
-//        text.setCharacterSize(7);
-//        text.setFillColor(sf::Color::Red);
-//        text.setString("A");
-//        text.setPosition(0, 0);
-//        text.setOutlineThickness(0.5);
-////        text.setOutlineColor(sf::Color::Red);
-//        sf::Text textB;
-//        textB.setFont(font);
-//        textB.setCharacterSize(7);
-//        textB.setFillColor(sf::Color::Red);
-//        textB.setString("B");
-//        textB.setPosition(0, 0);
-////        textB.setOutlineThickness(0);
-//        bool showText = false;
-//        bool showTextB = false;
 
 
         const unsigned int windowWidth = 800;
@@ -183,7 +214,7 @@ int main() {
 
         std::vector<sf::Vector2f> coordinates;
         for (int i = 0; i < num_points; ++i) {
-            coordinates.push_back(sf::Vector2f(start_points[i][0], start_points[i][1]));
+            coordinates.push_back(sf::Vector2f(start_points[i*3 + 0], start_points[i*3 + 1]));
         }
 
         sf::Clock clock;
@@ -270,8 +301,10 @@ int main() {
             window.clear();
 
             if (t < T) {
+                RK4(start_points, X_tmp, k1, k2, k3, k4);
+//                RK4(start_points, X_tmp, k[0], k[1], k[2], k[3]);
                 for (int i = 0; i < num_points; i++) {
-                    Vector3 v(start_points[i][0], start_points[i][1], start_points[i][2]);
+                    Vector3 v(start_points[i*3 + 0], start_points[i*3 + 1], start_points[i*3 + 2]);
                     Vector3 v_rotated = v * Rotation;
                     coordinates[i].x = v_rotated.x;
                     coordinates[i].y = v_rotated.y;
@@ -296,7 +329,7 @@ int main() {
                     }
 
                     window.draw(point_new);
-                    RK4(start_points[i], X_tmp, k[i][0], k[i][1], k[i][2], k[i][3]);
+//                    RK4(start_points[i], X_tmp, k[i][0], k[i][1], k[i][2], k[i][3]);
                 }
                 t += h;
             }
