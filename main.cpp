@@ -54,6 +54,7 @@ void make_start_points(double* points, int* colors, double num, double start, do
         }
         if (points[i * 3 + 0] < 0 && points[i * 3 + 1] <= 0) {
             colors[i] = 1;
+            colors[i] = 1;
         } else if (points[i * 3 + 0] < 0 && points[i * 3 + 1] > 0) {
             colors[i] = 2;
         } else if (points[i * 3 + 0] >= 0 && points[i * 3 + 1] <= 0) {
@@ -195,7 +196,7 @@ int main() {
 
     auto original_points = new int[NUM_POINTS];
 
-    make_start_points(start_points, original_points, NUM_POINTS, -5.0, 5.0);
+    make_start_points(start_points, original_points, NUM_POINTS, -2.0, 2.0);
 
 //    double X_tmp[3];
 
@@ -251,27 +252,20 @@ int main() {
                         window.close();
                     else if (event.key.code == sf::Keyboard::X) {
                         angleX += 0.1;
-//                        std::cout << "X-rotation" << std::endl;
                         flag = true;
                     }
                     else if (event.key.code == sf::Keyboard::Y) {
                         angleZ += 0.1;
-//                        std::cout << "Y-rotation" << std::endl;
                         flag = true;
                     }
                     else if (event.key.code == sf::Keyboard::Z) {
                         angleY += 0.1;
-//                        std::cout << "Z-rotation" << std::endl;
                         flag = true;
                     }
                     else if (event.key.code == sf::Keyboard::A) {
-//                        showText = true;
-//                        clock.restart();
                         a *= 1.2;
                     }
                     else if (event.key.code == sf::Keyboard::B) {
-//                        showTextB = true;
-//                        clock.restart();
                         b *= 1.2;
                     }
                 }
@@ -308,40 +302,29 @@ int main() {
                     coordinates[i].x = v_rotated.x;
                     coordinates[i].y = v_rotated.y;
 
-//                    coordinates[i].x = start_points[i][0];
-//                    coordinates[i].y = start_points[i][1];
-
-                    sf::CircleShape point_new(0.02f);
-
+                    sf::CircleShape point_new(0.015f);
                     point_new.setPosition(coordinates[i]);
-                    if (original_points[i] == 1) {
-                        point_new.setFillColor(sf::Color::Red);
-                    } else if (original_points[i] == 2) {
-                        point_new.setFillColor(sf::Color::Green);
-                    } else if (original_points[i] == 3) {
-                        point_new.setFillColor(sf::Color::Yellow);
-                    } else if (original_points[i] == 4) {
-                        point_new.setFillColor(sf::Color::Blue);
-                    }
-                    else {
-                        point_new.setFillColor(sf::Color::Red);
+
+                    switch (original_points[i]) {
+                        case 1:
+                            point_new.setFillColor(sf::Color::Red);
+                            break;
+                        case 2:
+                            point_new.setFillColor(sf::Color::Green);
+                            break;
+                        case 3:
+                            point_new.setFillColor(sf::Color::Yellow);
+                            break;
+                        case 4:
+                            point_new.setFillColor(sf::Color::Blue);
+                            break;
                     }
 
                     window.draw(point_new);
-//                    RK4(start_points[i], X_tmp, k[i][0], k[i][1], k[i][2], k[i][3]);
                 }
                 t += h;
             }
-//            if (showText) {
-//                window.draw(text);
-//            }
-
             window.display();
-
-//            if (showText && clock.getElapsedTime().asSeconds() > 3.0) {
-//                showText = false;
-//            }
-
         }
 
 }
