@@ -3,11 +3,10 @@
 #include <sstream>
 #include <iomanip>
 #include <cmath>
-//#include <math.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-#define num_points 10000
+#define NUM_POINTS 10000
 
 const double C1 = 1.0 / 9.0;
 const double C2 = 1.0;
@@ -129,7 +128,7 @@ void f_Chua(double X, double Y, double Z, double* dX) {
 //    }
 //}
 void RK4(double* X, double* X_tmp, double* k1, double* k2, double* k3, double* k4) {
-    for (int j = 0; j < num_points; j++) {
+    for (int j = 0; j < NUM_POINTS; j++) {
         f_Chua(X[j*3 + 0], X[j*3 + 1], X[j*3 + 2], k1);
         for (int i = 0; i < 3; i++) {
             X_tmp[i] = X[j*3 + i] + h * 0.5 * k1[i];
@@ -191,12 +190,12 @@ int main() {
 //    for (int i = 0; i < num_points; i++) {
 //        start_points[i] = new double[3];
 //    }
-    auto start_points = new double[num_points * 3];
+    auto start_points = new double[NUM_POINTS * 3];
     auto X_tmp = new double[3];
 
-    auto original_points = new int[num_points];
+    auto original_points = new int[NUM_POINTS];
 
-    make_start_points(start_points, original_points, num_points, -5.0, 5.0);
+    make_start_points(start_points, original_points, NUM_POINTS, -5.0, 5.0);
 
 //    double X_tmp[3];
 
@@ -213,7 +212,7 @@ int main() {
         window.setView(view);
 
         std::vector<sf::Vector2f> coordinates;
-        for (int i = 0; i < num_points; ++i) {
+        for (int i = 0; i < NUM_POINTS; ++i) {
             coordinates.push_back(sf::Vector2f(start_points[i*3 + 0], start_points[i*3 + 1]));
         }
 
@@ -303,7 +302,7 @@ int main() {
             if (t < T) {
                 RK4(start_points, X_tmp, k1, k2, k3, k4);
 //                RK4(start_points, X_tmp, k[0], k[1], k[2], k[3]);
-                for (int i = 0; i < num_points; i++) {
+                for (int i = 0; i < NUM_POINTS; i++) {
                     Vector3 v(start_points[i*3 + 0], start_points[i*3 + 1], start_points[i*3 + 2]);
                     Vector3 v_rotated = v * Rotation;
                     coordinates[i].x = v_rotated.x;
