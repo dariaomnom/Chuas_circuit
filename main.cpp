@@ -162,30 +162,29 @@ int main() {
 //    }
 
 
-//          вывод текста
+
         sf::Clock clock;
-        sf::Font font;
-        if (!font.loadFromFile("../Montserrat-Regular.ttf")) {
-            return EXIT_FAILURE;
-        }
-        sf::Text text;
-        text.setFont(font);
-        text.setCharacterSize(7);
-        text.setFillColor(sf::Color::Red);
-        text.setString("A");
-        text.setPosition(0, 0);
-        text.setOutlineThickness(0.5);
-//        text.setOutlineColor(sf::Color::Red);
-        sf::Text textB;
-        textB.setFont(font);
-        textB.setCharacterSize(7);
-        textB.setFillColor(sf::Color::Red);
-        textB.setString("B");
-        textB.setPosition(0, 0);
-//        textB.setOutlineThickness(0);
-        bool showText = false;
-        bool showTextB = false;
-//          вывод текста
+//        sf::Font font;
+//        if (!font.loadFromFile("../Montserrat-Regular.ttf")) {
+//            return EXIT_FAILURE;
+//        }
+//        sf::Text text;
+//        text.setFont(font);
+//        text.setCharacterSize(7);
+//        text.setFillColor(sf::Color::Red);
+//        text.setString("A");
+//        text.setPosition(0, 0);
+//        text.setOutlineThickness(0.5);
+////        text.setOutlineColor(sf::Color::Red);
+//        sf::Text textB;
+//        textB.setFont(font);
+//        textB.setCharacterSize(7);
+//        textB.setFillColor(sf::Color::Red);
+//        textB.setString("B");
+//        textB.setPosition(0, 0);
+////        textB.setOutlineThickness(0);
+//        bool showText = false;
+//        bool showTextB = false;
 
 
         const unsigned int windowWidth = 800;
@@ -294,7 +293,7 @@ int main() {
 //                    coordinates[i].x = start_points[i][0];
 //                    coordinates[i].y = start_points[i][1];
 
-                    sf::CircleShape point_new(0.020f);
+                    sf::CircleShape point_new(0.02f);
 
                     point_new.setPosition(coordinates[i]);
                     if (original_points[i] == 1) {
