@@ -31,22 +31,6 @@ double rand(double start, double stop) {
     return res;
 }
 
-//void make_start_points(double** points, int* colors, double num, double start, double stop) {
-//    for (int i = 0; i < num; i++) {
-//        for (int j = 0; j < 3; j++) {
-//            points[i][j] = rand(start, stop);
-//        }
-//        if (points[i][0] < 0 && points[i][1] <= 0) {
-//            colors[i] = 1;
-//        } else if (points[i][0] < 0 && points[i][1] > 0) {
-//            colors[i] = 2;
-//        } else if (points[i][0] >= 0 && points[i][1] <= 0) {
-//            colors[i] = 3;
-//        } else if (points[i][0] >= 0 && points[i][1] > 0) {
-//            colors[i] = 4;
-//        }
-//    }
-//}
 void make_start_points(double* points, int* colors, double num, double start, double stop) {
     for (int i = 0; i < num; i++) {
         for (int j = 0; j < 3; j++) {
@@ -65,69 +49,16 @@ void make_start_points(double* points, int* colors, double num, double start, do
     }
 }
 
-
-
 double H(double x) {
     return m1 * x + ((m0 - m1) / 2) * (fabs(x + 1) - fabs(x - 1));
 }
-//void H(double* x, double* H_func) {
-//    for (int i = 0; i < num_points; i++) {
-//        H_func[i] = m1 * x[i] + ((m0 - m1) / 2) * (fabs(x[i] + 1) - fabs(x[i] - 1));
-//    }
-//}
 
-//void f_Chua(double* X, double* dX) {
-//    dX[0] = a * (X[1] - X[0] - H(X[0]));
-//    dX[1] = X[0] - X[1] + X[2];
-//    dX[2] = -b * X[1];
-//}
-
-//void f_Chua(double* X, double* dX, int point_index) {
-//    dX[0] = a * (X[point_index * 3 + 1] - X[point_index * 3 + 0] - H(X[point_index * 3 + 0]));
-//    dX[1] = X[point_index * 3 + 0] - X[point_index * 3 + 1] + X[point_index * 3 + 2];
-//    dX[2] = -b * X[point_index * 3 + 1];
-//}
-//void f_Chua(double* X, double* dX) {
-//    dX[0] = a * (X[1] - X[0] - H(X[0]));
-//    dX[1] = X[0] - X[1] + X[2];
-//    dX[2] = -b * X[1];
-//}
 void f_Chua(double X, double Y, double Z, double* dX) {
     dX[0] = a * (Y - X - H(X));
     dX[1] = X - Y + Z;
     dX[2] = -b * Y;
 }
 
-//void f_Chua(double* X, double* dX, double* H_func) {
-//    H(X, H_func);
-//    for (int i = 0; i < num_points; i++) {
-//        dX[i*3 + 0] = a * (X[i*3 + 1] - X[i*3 + 0] - H_func[i]);
-//        dX[i*3 + 1] = X[i*3 + 0] - X[i*3 + 1] + X[i*3 + 2];
-//        dX[i*3 + 2] = -b * X[i*3 + 1];
-//    }
-//}
-
-//void RK4(double* X, double* X_tmp, double* k1, double* k2, double* k3, double* k4) {
-//    f_Chua(X, k1);
-//    for (int i = 0; i < 3; i++) {
-//        X_tmp[i] = X[i] + h * 0.5 * k1[i];
-//    }
-//
-//    f_Chua(X_tmp, k2);
-//    for (int i = 0; i < 3; i++) {
-//        X_tmp[i] = X[i] + h * 0.5 * k2[i];
-//    }
-//
-//    f_Chua(X_tmp, k3);
-//    for (int i = 0; i < 3; i++) {
-//        X_tmp[i] = X[i] + h * 1 * k3[i];
-//    }
-//
-//    f_Chua(X_tmp, k4);
-//    for (int i = 0; i < 3; i++) {
-//        X[i] += h * (1.0 / 6.0 * k1[i] + 1.0 / 3.0 * k2[i] + 1.0 / 3.0 * k3[i] + 1.0 / 6.0 * k4[i]);
-//    }
-//}
 void RK4(double* X, double* X_tmp, double* k1, double* k2, double* k3, double* k4) {
     for (int j = 0; j < NUM_POINTS; j++) {
         f_Chua(X[j*3 + 0], X[j*3 + 1], X[j*3 + 2], k1);
@@ -171,26 +102,11 @@ struct Vector3 {
 
 
 int main() {
-//    int num_points = 10000;
-
-//    auto k = new double**[num_points];
-//    for (int i = 0; i < num_points; i++) {
-//        k[i] = new double*[4];
-//        for (int j = 0; j < 4; j++) {
-//            k[i][j] = new double[3];
-//        }
-//    }
-//    auto k = new double[num_points * 4 * 3];
     auto k1 = new double[3];
     auto k2 = new double[3];
     auto k3 = new double[3];
     auto k4 = new double[3];
 
-
-//    auto start_points = new double*[num_points];
-//    for (int i = 0; i < num_points; i++) {
-//        start_points[i] = new double[3];
-//    }
     auto start_points = new double[NUM_POINTS * 3];
     auto X_tmp = new double[3];
 
@@ -198,17 +114,10 @@ int main() {
 
     make_start_points(start_points, original_points, NUM_POINTS, -2.0, 2.0);
 
-//    double X_tmp[3];
-
-//    auto H_func = new double[num_points];
-
-
-
         const unsigned int windowWidth = 800;
         const unsigned int windowHeight = 800;
         sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Attractor");
         sf::View view(sf::FloatRect(-5.f, -5.f, 10.f, 10.f));
-//        sf::View view(sf::FloatRect(-20.f, -20.f, 40.f, 40.f));
         view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
         window.setView(view);
 
