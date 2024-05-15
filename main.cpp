@@ -17,10 +17,9 @@ const double Gb = -0.5;
 
 const double m0 = Ga / G;
 const double m1 = Gb / G;
- double a = C2 / C1;
- double b = C2 / (G * G * L);
+double a = C2 / C1;
+double b = C2 / (G * G * L);
 
-const double T = 10000.0;
 const double h = 0.01;
 
 
@@ -110,130 +109,126 @@ int main() {
     auto start_points = new double[NUM_POINTS * 3];
     auto X_tmp = new double[3];
 
-    auto original_points = new int[NUM_POINTS];
+    auto colors = new int[NUM_POINTS];
 
-    make_start_points(start_points, original_points, NUM_POINTS, -2.0, 2.0);
+    make_start_points(start_points, colors, NUM_POINTS, -2.0, 2.0);
 
-        const unsigned int windowWidth = 800;
-        const unsigned int windowHeight = 800;
-        sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Attractor");
-        sf::View view(sf::FloatRect(-5.f, -5.f, 10.f, 10.f));
-        view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
-        window.setView(view);
+    const unsigned int windowWidth = 800;
+    const unsigned int windowHeight = 800;
+    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Attractor");
+    sf::View view(sf::FloatRect(-5.f, -5.f, 10.f, 10.f));
+    view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
+    window.setView(view);
 
-        std::vector<sf::Vector2f> coordinates;
-        for (int i = 0; i < NUM_POINTS; ++i) {
-            coordinates.push_back(sf::Vector2f(start_points[i*3 + 0], start_points[i*3 + 1]));
-        }
+    std::vector<sf::Vector2f> coordinates;
+    for (int i = 0; i < NUM_POINTS; ++i) {
+        coordinates.push_back(sf::Vector2f(start_points[i*3 + 0], start_points[i*3 + 1]));
+    }
 
-        sf::Clock clock;
-        const float desiredFrameTime = 10.0f;
-
-
-        float angleX = 0.0f;
-        float angleY = 0.0f;
-        float angleZ = 0.0f;
-        float Rotation[3][3] = {
-            {std::cos(angleY)*std::cos(angleZ),
-                    -std::sin(angleZ)*std::cos(angleY),
-                    std::sin(angleY)},
-            {std::sin(angleX)*std::sin(angleY)*std::cos(angleZ)+std::sin(angleZ)*std::cos(angleX),
-                    -std::sin(angleX)*std::sin(angleY)*std::sin(angleZ)+std::cos(angleX)*std::cos(angleZ),
-                    -std::sin(angleX)*std::cos(angleY)},
-            {std::sin(angleX)*std::sin(angleZ)-std::sin(angleY)*std::cos(angleX)*std::cos(angleZ),
-                    std::sin(angleX)*std::cos(angleZ)+std::sin(angleY)*std::sin(angleZ)*std::cos(angleX),
-                    std::cos(angleX)*std::cos(angleY)}
-        };
-        bool flag = false;
+    sf::Clock clock;
+    const float desiredFrameTime = 10.0f;
 
 
-        double t = 0;
-        while (window.isOpen())
+    float angleX = 0.0f;
+    float angleY = 0.0f;
+    float angleZ = 0.0f;
+    float Rotation[3][3] = {
+        {std::cos(angleY)*std::cos(angleZ),
+                -std::sin(angleZ)*std::cos(angleY),
+                std::sin(angleY)},
+        {std::sin(angleX)*std::sin(angleY)*std::cos(angleZ)+std::sin(angleZ)*std::cos(angleX),
+                -std::sin(angleX)*std::sin(angleY)*std::sin(angleZ)+std::cos(angleX)*std::cos(angleZ),
+                -std::sin(angleX)*std::cos(angleY)},
+        {std::sin(angleX)*std::sin(angleZ)-std::sin(angleY)*std::cos(angleX)*std::cos(angleZ),
+                std::sin(angleX)*std::cos(angleZ)+std::sin(angleY)*std::sin(angleZ)*std::cos(angleX),
+                std::cos(angleX)*std::cos(angleY)}
+    };
+    bool flag = false;
+
+
+    double t = 0;
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
         {
-            sf::Event event;
-            while (window.pollEvent(event))
+            if (event.type == sf::Event::Closed)
+                window.close();
+            else if (event.type == sf::Event::KeyPressed)
             {
-                if (event.type == sf::Event::Closed)
+                if (event.key.code == sf::Keyboard::Escape)
                     window.close();
-                else if (event.type == sf::Event::KeyPressed)
-                {
-                    if (event.key.code == sf::Keyboard::Escape)
-                        window.close();
-                    else if (event.key.code == sf::Keyboard::X) {
-                        angleX += 0.1;
-                        flag = true;
-                    }
-                    else if (event.key.code == sf::Keyboard::Y) {
-                        angleZ += 0.1;
-                        flag = true;
-                    }
-                    else if (event.key.code == sf::Keyboard::Z) {
-                        angleY += 0.1;
-                        flag = true;
-                    }
-                    else if (event.key.code == sf::Keyboard::A) {
-                        a *= 1.2;
-                    }
-                    else if (event.key.code == sf::Keyboard::B) {
-                        b *= 1.2;
-                    }
+                else if (event.key.code == sf::Keyboard::X) {
+                    angleX += 0.1;
+                    flag = true;
                 }
-
-            }
-            if (flag) {
-                Rotation[0][0] = std::cos(angleY) * std::cos(angleZ);
-                Rotation[0][1] = -(std::sin(angleZ) * std::cos(angleY));
-                Rotation[0][2] = std::sin(angleY);
-                Rotation[1][0] = std::sin(angleX) * std::sin(angleY) * std::cos(angleZ) +
-                                 std::sin(angleZ) * std::cos(angleX);
-                Rotation[1][1] = -(std::sin(angleX) * std::sin(angleY) * std::sin(angleZ)) +
-                                 std::cos(angleX) * std::cos(angleZ);
-                Rotation[1][2] = -(std::sin(angleX) * std::cos(angleY));
-                Rotation[2][0] = std::sin(angleX) * std::sin(angleZ) -
-                                 (std::sin(angleY) * std::cos(angleX) * std::cos(angleZ));
-                Rotation[2][1] = std::sin(angleX) * std::cos(angleZ) +
-                                 std::sin(angleY) * std::sin(angleZ) * std::cos(angleX);
-                Rotation[2][2] = std::cos(angleX) * std::cos(angleY);
-            }
-
-            sf::Time elapsed = clock.restart();
-            if (elapsed.asMilliseconds() < desiredFrameTime)
-                sf::sleep(sf::milliseconds(desiredFrameTime - elapsed.asMilliseconds()));
-
-            window.clear();
-
-            if (t < T) {
-                RK4(start_points, X_tmp, k1, k2, k3, k4);
-//                RK4(start_points, X_tmp, k[0], k[1], k[2], k[3]);
-                for (int i = 0; i < NUM_POINTS; i++) {
-                    Vector3 v(start_points[i*3 + 0], start_points[i*3 + 1], start_points[i*3 + 2]);
-                    Vector3 v_rotated = v * Rotation;
-                    coordinates[i].x = v_rotated.x;
-                    coordinates[i].y = v_rotated.y;
-
-                    sf::CircleShape point_new(0.015f);
-                    point_new.setPosition(coordinates[i]);
-
-                    switch (original_points[i]) {
-                        case 1:
-                            point_new.setFillColor(sf::Color::Red);
-                            break;
-                        case 2:
-                            point_new.setFillColor(sf::Color::Green);
-                            break;
-                        case 3:
-                            point_new.setFillColor(sf::Color::Yellow);
-                            break;
-                        case 4:
-                            point_new.setFillColor(sf::Color::Blue);
-                            break;
-                    }
-
-                    window.draw(point_new);
+                else if (event.key.code == sf::Keyboard::Y) {
+                    angleZ += 0.1;
+                    flag = true;
                 }
-                t += h;
+                else if (event.key.code == sf::Keyboard::Z) {
+                    angleY += 0.1;
+                    flag = true;
+                }
+                else if (event.key.code == sf::Keyboard::A) {
+                    a *= 1.2;
+                }
+                else if (event.key.code == sf::Keyboard::B) {
+                    b *= 1.2;
+                }
             }
-            window.display();
+
+        }
+        if (flag) {
+            Rotation[0][0] = std::cos(angleY) * std::cos(angleZ);
+            Rotation[0][1] = -(std::sin(angleZ) * std::cos(angleY));
+            Rotation[0][2] = std::sin(angleY);
+            Rotation[1][0] = std::sin(angleX) * std::sin(angleY) * std::cos(angleZ) +
+                             std::sin(angleZ) * std::cos(angleX);
+            Rotation[1][1] = -(std::sin(angleX) * std::sin(angleY) * std::sin(angleZ)) +
+                             std::cos(angleX) * std::cos(angleZ);
+            Rotation[1][2] = -(std::sin(angleX) * std::cos(angleY));
+            Rotation[2][0] = std::sin(angleX) * std::sin(angleZ) -
+                             (std::sin(angleY) * std::cos(angleX) * std::cos(angleZ));
+            Rotation[2][1] = std::sin(angleX) * std::cos(angleZ) +
+                             std::sin(angleY) * std::sin(angleZ) * std::cos(angleX);
+            Rotation[2][2] = std::cos(angleX) * std::cos(angleY);
         }
 
+        sf::Time elapsed = clock.restart();
+        if (elapsed.asMilliseconds() < desiredFrameTime)
+            sf::sleep(sf::milliseconds(desiredFrameTime - elapsed.asMilliseconds()));
+
+        window.clear();
+
+            RK4(start_points, X_tmp, k1, k2, k3, k4);
+
+            for (int i = 0; i < NUM_POINTS; i++) {
+                Vector3 v(start_points[i*3 + 0], start_points[i*3 + 1], start_points[i*3 + 2]);
+                Vector3 v_rotated = v * Rotation;
+                coordinates[i].x = v_rotated.x;
+                coordinates[i].y = v_rotated.y;
+
+                sf::CircleShape point_new(0.015f);
+                point_new.setPosition(coordinates[i]);
+
+                switch (colors[i]) {
+                    case 1:
+                        point_new.setFillColor(sf::Color::Red);
+                        break;
+                    case 2:
+                        point_new.setFillColor(sf::Color::Green);
+                        break;
+                    case 3:
+                        point_new.setFillColor(sf::Color::Yellow);
+                        break;
+                    case 4:
+                        point_new.setFillColor(sf::Color::Blue);
+                        break;
+                }
+
+                window.draw(point_new);
+            }
+        window.display();
+    }
 }
