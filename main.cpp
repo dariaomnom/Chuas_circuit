@@ -161,20 +161,27 @@ int main() {
                 else if (event.key.code == sf::Keyboard::X) {
                     angleX += 0.1;
                     flag = true;
+                    std::cout << "X-rotation" << std::endl;
                 }
                 else if (event.key.code == sf::Keyboard::Y) {
                     angleZ += 0.1;
                     flag = true;
+                    std::cout << "Y-rotation" << std::endl;
                 }
                 else if (event.key.code == sf::Keyboard::Z) {
                     angleY += 0.1;
                     flag = true;
+                    std::cout << "Z-rotation" << std::endl;
                 }
                 else if (event.key.code == sf::Keyboard::A) {
                     a *= 1.2;
+                    std::cout << "Alpha changed (a * 1.2)" << std::endl;
+                    std::cout << "Alpha = " << a << std::endl;
                 }
                 else if (event.key.code == sf::Keyboard::B) {
                     b *= 1.2;
+                    std::cout << "Beta changed (b * 1.2)" << std::endl;
+                    std::cout << "Beta = " << b << std::endl;
                 }
             }
 
