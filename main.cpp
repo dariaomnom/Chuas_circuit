@@ -86,7 +86,7 @@ struct Vector3 {
 
     Vector3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
 
-    // Перегрузка оператора умножения для умножения вектора на матрицу
+    // перегрузка оператора умножения для умножения вектора на матрицу
     Vector3 operator*(const float matrix[3][3]) const {
         return Vector3(
                 x * matrix[0][0] + y * matrix[0][1] + z * matrix[0][2],
@@ -104,27 +104,32 @@ int main() {
     auto k3 = new double[3];
     auto k4 = new double[3];
 
-    auto start_points = new double[NUM_POINTS * 3];
+    auto points = new double[NUM_POINTS * 3];
     auto X_tmp = new double[3];
-    const sf::Color* colors_static[NUM_POINTS];
+    const sf::Color* colors_static[NUM_POINTS]; // массив для выбора цвета в sfml
 
-    make_start_points(start_points, colors_static, NUM_POINTS, -2.0, 2.0);
+    make_start_points(points, colors_static, NUM_POINTS, -2.0, 2.0);
 
+    // параметры окна анимации
     const unsigned int windowWidth = 800;
     const unsigned int windowHeight = 800;
-    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Attractor");
+    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Chua's attractor");
     sf::View view(sf::FloatRect(-5.f, -5.f, 10.f, 10.f));
     view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
     window.setView(view);
 
+    // перенос начальных точек в массив векторов координат
     std::vector<sf::Vector2f> coordinates;
+    coordinates.reserve(NUM_POINTS);
     for (int i = 0; i < NUM_POINTS; ++i) {
-        coordinates.push_back(sf::Vector2f(start_points[i*3 + 0], start_points[i*3 + 1]));
+        coordinates.emplace_back(points[i*3 + 0], points[i*3 + 1]);
     }
 
+    // 10 миллисекунд = 100 кадров в секунду
     sf::Clock clock;
     const float desiredFrameTime = 10.0f;
 
+    // углы вращения и матрица поворота координат
     float angleX = 0.0f;
     float angleY = 0.0f;
     float angleZ = 0.0f;
@@ -139,13 +144,10 @@ int main() {
                 std::sin(angleX)*std::cos(angleZ)+std::sin(angleY)*std::sin(angleZ)*std::cos(angleX),
                 std::cos(angleX)*std::cos(angleY)}
     };
-    bool flag = false;
-
-    // массив статических переменных для выбора цвета в sfml
-//    const sf::Color* colors_static[] = {&sf::Color::Red, &sf::Color::Green, &sf::Color::Yellow, &sf::Color::Blue};
+    bool is_rotated = false;
 
     while (window.isOpen()) {
-        // считывание нажатий клавиш X, Y, Z, A, B, Escape
+        // считывание нажатий клавиш X, Y, Z, A, B, Escape (не забудьте переключить раскладку)
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
@@ -155,17 +157,17 @@ int main() {
                     window.close();
                 else if (event.key.code == sf::Keyboard::X) {
                     angleX += 0.1;
-                    flag = true;
+                    is_rotated = true;
                     std::cout << "X-rotation" << std::endl;
                 }
                 else if (event.key.code == sf::Keyboard::Y) {
                     angleZ += 0.1;
-                    flag = true;
+                    is_rotated = true;
                     std::cout << "Y-rotation" << std::endl;
                 }
                 else if (event.key.code == sf::Keyboard::Z) {
                     angleY += 0.1;
-                    flag = true;
+                    is_rotated = true;
                     std::cout << "Z-rotation" << std::endl;
                 }
                 else if (event.key.code == sf::Keyboard::A) {
@@ -182,7 +184,7 @@ int main() {
 
         }
 
-        if (flag) {
+        if (is_rotated) {
             // обновление матрицы поворота, если было вращение по осям координат
             Rotation[0][0] = std::cos(angleY) * std::cos(angleZ);
             Rotation[0][1] = -(std::sin(angleZ) * std::cos(angleY));
@@ -207,34 +209,17 @@ int main() {
         window.clear();
 
         // обработка всех точек
-        RK4(start_points, X_tmp, k1, k2, k3, k4);
+        RK4(points, X_tmp, k1, k2, k3, k4);
 
         // вывод точек в цикле
         for (int i = 0; i < NUM_POINTS; i++) {
-            Vector3 v(start_points[i*3 + 0], start_points[i*3 + 1], start_points[i*3 + 2]);
+            Vector3 v(points[i*3 + 0], points[i*3 + 1], points[i*3 + 2]);
             Vector3 v_rotated = v * Rotation;
             coordinates[i].x = v_rotated.x;
             coordinates[i].y = v_rotated.y;
 
             sf::CircleShape point_new(0.015f);
             point_new.setPosition(coordinates[i]);
-
-            // вариант реализации выбора цвета точек через switch-case,
-//            switch (colors[i]) {
-//                case 1:
-//                    point_new.setFillColor(sf::Color::Red);
-//                    break;
-//                case 2:
-//                    point_new.setFillColor(sf::Color::Green);
-//                    break;
-//                case 3:
-//                    point_new.setFillColor(sf::Color::Yellow);
-//                    break;
-//                case 4:
-//                    point_new.setFillColor(sf::Color::Blue);
-//                    break;
-//            }
-            // вариант реализации через массив статических переменных
             point_new.setFillColor(*colors_static[i]);
 
             window.draw(point_new);
