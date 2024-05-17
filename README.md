@@ -1,4 +1,4 @@
-# Chua's_circuit
+# Chua's circuit
 
 Анимация по ссылке:
 https://drive.google.com/file/d/1rlPJEHpjYkm0wG2Pe62WHmYmKeilx-U3/view?usp=sharing

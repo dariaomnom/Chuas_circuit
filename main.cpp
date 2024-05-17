@@ -22,7 +22,6 @@ double b = C2 / (G * G * L);
 
 const double h = 0.01;
 
-
 class RenderWindow;
 
 double rand(double start, double stop) {
@@ -30,20 +29,19 @@ double rand(double start, double stop) {
     return res;
 }
 
-void make_start_points(double* points, int* colors, double num, double start, double stop) {
+void make_start_points(double* points, const sf::Color* colors_static[], double num, double start, double stop) {
     for (int i = 0; i < num; i++) {
         for (int j = 0; j < 3; j++) {
             points[i * 3 + j] = rand(start, stop);
         }
         if (points[i * 3 + 0] < 0 && points[i * 3 + 1] <= 0) {
-            colors[i] = 1;
-            colors[i] = 1;
+            colors_static[i] = &sf::Color::Red;
         } else if (points[i * 3 + 0] < 0 && points[i * 3 + 1] > 0) {
-            colors[i] = 2;
+            colors_static[i] = &sf::Color::Green;
         } else if (points[i * 3 + 0] >= 0 && points[i * 3 + 1] <= 0) {
-            colors[i] = 3;
+            colors_static[i] = &sf::Color::Yellow;
         } else if (points[i * 3 + 0] >= 0 && points[i * 3 + 1] > 0) {
-            colors[i] = 4;
+            colors_static[i] = &sf::Color::Blue;
         }
     }
 }
@@ -108,10 +106,9 @@ int main() {
 
     auto start_points = new double[NUM_POINTS * 3];
     auto X_tmp = new double[3];
+    const sf::Color* colors_static[NUM_POINTS];
 
-    auto colors = new int[NUM_POINTS];
-
-    make_start_points(start_points, colors, NUM_POINTS, -2.0, 2.0);
+    make_start_points(start_points, colors_static, NUM_POINTS, -2.0, 2.0);
 
     const unsigned int windowWidth = 800;
     const unsigned int windowHeight = 800;
@@ -127,7 +124,6 @@ int main() {
 
     sf::Clock clock;
     const float desiredFrameTime = 10.0f;
-
 
     float angleX = 0.0f;
     float angleY = 0.0f;
@@ -145,17 +141,16 @@ int main() {
     };
     bool flag = false;
 
+    // массив статических переменных для выбора цвета в sfml
+//    const sf::Color* colors_static[] = {&sf::Color::Red, &sf::Color::Green, &sf::Color::Yellow, &sf::Color::Blue};
 
-    double t = 0;
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
+        // считывание нажатий клавиш X, Y, Z, A, B, Escape
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
-            else if (event.type == sf::Event::KeyPressed)
-            {
+            else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Escape)
                     window.close();
                 else if (event.key.code == sf::Keyboard::X) {
@@ -186,7 +181,9 @@ int main() {
             }
 
         }
+
         if (flag) {
+            // обновление матрицы поворота, если было вращение по осям координат
             Rotation[0][0] = std::cos(angleY) * std::cos(angleZ);
             Rotation[0][1] = -(std::sin(angleZ) * std::cos(angleY));
             Rotation[0][2] = std::sin(angleY);
@@ -202,40 +199,46 @@ int main() {
             Rotation[2][2] = std::cos(angleX) * std::cos(angleY);
         }
 
+        // проверка времени, прошедшего с последнего кадра
         sf::Time elapsed = clock.restart();
         if (elapsed.asMilliseconds() < desiredFrameTime)
             sf::sleep(sf::milliseconds(desiredFrameTime - elapsed.asMilliseconds()));
 
         window.clear();
 
-            RK4(start_points, X_tmp, k1, k2, k3, k4);
+        // обработка всех точек
+        RK4(start_points, X_tmp, k1, k2, k3, k4);
 
-            for (int i = 0; i < NUM_POINTS; i++) {
-                Vector3 v(start_points[i*3 + 0], start_points[i*3 + 1], start_points[i*3 + 2]);
-                Vector3 v_rotated = v * Rotation;
-                coordinates[i].x = v_rotated.x;
-                coordinates[i].y = v_rotated.y;
+        // вывод точек в цикле
+        for (int i = 0; i < NUM_POINTS; i++) {
+            Vector3 v(start_points[i*3 + 0], start_points[i*3 + 1], start_points[i*3 + 2]);
+            Vector3 v_rotated = v * Rotation;
+            coordinates[i].x = v_rotated.x;
+            coordinates[i].y = v_rotated.y;
 
-                sf::CircleShape point_new(0.015f);
-                point_new.setPosition(coordinates[i]);
+            sf::CircleShape point_new(0.015f);
+            point_new.setPosition(coordinates[i]);
 
-                switch (colors[i]) {
-                    case 1:
-                        point_new.setFillColor(sf::Color::Red);
-                        break;
-                    case 2:
-                        point_new.setFillColor(sf::Color::Green);
-                        break;
-                    case 3:
-                        point_new.setFillColor(sf::Color::Yellow);
-                        break;
-                    case 4:
-                        point_new.setFillColor(sf::Color::Blue);
-                        break;
-                }
+            // вариант реализации выбора цвета точек через switch-case,
+//            switch (colors[i]) {
+//                case 1:
+//                    point_new.setFillColor(sf::Color::Red);
+//                    break;
+//                case 2:
+//                    point_new.setFillColor(sf::Color::Green);
+//                    break;
+//                case 3:
+//                    point_new.setFillColor(sf::Color::Yellow);
+//                    break;
+//                case 4:
+//                    point_new.setFillColor(sf::Color::Blue);
+//                    break;
+//            }
+            // вариант реализации через массив статических переменных
+            point_new.setFillColor(*colors_static[i]);
 
-                window.draw(point_new);
-            }
+            window.draw(point_new);
+        }
         window.display();
     }
 }
