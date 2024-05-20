@@ -20,7 +20,7 @@ const double m1 = Gb / G;
 double a = C2 / C1;
 double b = C2 / (G * G * L);
 
-const double h = 0.1;
+const double h = 0.01;
 
 class RenderWindow;
 
@@ -118,13 +118,6 @@ int main() {
     view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
     window.setView(view);
 
-    // перенос начальных точек в массив векторов координат
-    std::vector<sf::Vector2f> coordinates;
-    coordinates.reserve(NUM_POINTS);
-    for (int i = 0; i < NUM_POINTS; ++i) {
-        coordinates.emplace_back(points[i*3 + 0], points[i*3 + 1]);
-    }
-
     // 10 миллисекунд = 100 кадров в секунду
     sf::Clock clock;
     const float desiredFrameTime = 10.0f;
@@ -146,6 +139,7 @@ int main() {
     };
     bool is_rotated = false;
 
+    // массив вершин для отрисовки точек
     sf::VertexArray vertices(sf::Points, NUM_POINTS);
 
     while (window.isOpen()) {
@@ -217,9 +211,8 @@ int main() {
         for (int i = 0; i < NUM_POINTS; i++) {
             Vector3 v(points[i*3 + 0], points[i*3 + 1], points[i*3 + 2]);
             Vector3 v_rotated = v * Rotation;
-            coordinates[i].x = v_rotated.x;
-            coordinates[i].y = v_rotated.y;
-            vertices[i].position = coordinates[i];
+            vertices[i].position.x = v_rotated.x;
+            vertices[i].position.y = v_rotated.y;
             vertices[i].color = *colors_static[i];
         }
         // вывод всех точек в массиве вершин за раз
