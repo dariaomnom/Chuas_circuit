@@ -20,7 +20,7 @@ const double m1 = Gb / G;
 double a = C2 / C1;
 double b = C2 / (G * G * L);
 
-const double h = 0.01;
+const double h = 0.1;
 
 class RenderWindow;
 
@@ -114,7 +114,7 @@ int main() {
     const unsigned int windowWidth = 800;
     const unsigned int windowHeight = 800;
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Chua's attractor");
-    sf::View view(sf::FloatRect(-5.f, -5.f, 10.f, 10.f));
+    sf::View view(sf::FloatRect(-4.f, -4.f, 8.f, 8.f));
     view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
     window.setView(view);
 
@@ -145,6 +145,8 @@ int main() {
                 std::cos(angleX)*std::cos(angleY)}
     };
     bool is_rotated = false;
+
+    sf::VertexArray vertices(sf::Points, NUM_POINTS);
 
     while (window.isOpen()) {
         // считывание нажатий клавиш X, Y, Z, A, B, Escape (не забудьте переключить раскладку)
@@ -211,19 +213,24 @@ int main() {
         // обработка всех точек
         RK4(points, X_tmp, k1, k2, k3, k4);
 
-        // вывод точек в цикле
+        // поворот точек и обновление массива вершин
         for (int i = 0; i < NUM_POINTS; i++) {
             Vector3 v(points[i*3 + 0], points[i*3 + 1], points[i*3 + 2]);
             Vector3 v_rotated = v * Rotation;
             coordinates[i].x = v_rotated.x;
             coordinates[i].y = v_rotated.y;
-
-            sf::CircleShape point_new(0.015f);
-            point_new.setPosition(coordinates[i]);
-            point_new.setFillColor(*colors_static[i]);
-
-            window.draw(point_new);
+            vertices[i].position = coordinates[i];
+            vertices[i].color = *colors_static[i];
         }
+        // вывод всех точек в массиве вершин за раз
+        window.draw(vertices);
         window.display();
     }
+    delete[] k1;
+    delete[] k2;
+    delete[] k3;
+    delete[] k4;
+    delete[] points;
+    delete[] X_tmp;
+    return 0;
 }
